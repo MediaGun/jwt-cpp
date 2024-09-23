@@ -1,0 +1,90 @@
+name: CI Build Dev
+run-name: Build project by ${{ github.actor }}
+
+on:
+  push:
+    branches:
+      - master
+
+concurrency:
+  group: ${{ github.workflow }}
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build_linux:
+    name: Build for Linux
+    runs-on: [ ubuntu-24.04 ]
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_INSTALL_PREFIX=install
+
+      - name: Compile
+        run: cmake --build build
+
+      - name: Install
+        run: cmake --install build
+
+      - name: Publish
+        uses: actions/upload-artifact@v4
+        with:
+          name: jwt-cpp-linux
+          path: install
+
+  build_windows:
+    name: Build for Windows
+    runs-on: [ windows-2022 ]
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_INSTALL_PREFIX=install
+
+      - name: Compile
+        run: cmake --build build
+
+      - name: Install
+        run: cmake --install build
+
+      - name: Publish
+        uses: actions/upload-artifact@v4
+        with:
+          name: jwt-cpp-windows
+          path: install
+
+  build_macos:
+    name: Build for MacOS
+    runs-on: [ macos-14 ]
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_INSTALL_PREFIX=install
+
+      - name: Compile
+        run: cmake --build build
+
+      - name: Install
+        run: cmake --install build
+
+      - name: Publish
+        uses: actions/upload-artifact@v4
+        with:
+          name: jwt-cpp-macos
+          path: install
